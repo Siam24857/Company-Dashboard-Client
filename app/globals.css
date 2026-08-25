@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #0B1112;
+  --teal: #3B8E93;
+  --orange: #FF8A3D;
+  --offwhite: #F2F7F7;
+}
+
+body {
+  background-color: #0B1112;
+  color: #F2F7F7;
+  font-family: 'Inter', sans-serif;
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-primary text-offwhite; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-orange text-primary font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity;
+  }
+  .btn-secondary {
+    @apply border border-teal text-teal bg-transparent font-semibold px-4 py-2 rounded-lg hover:bg-teal/10 transition-colors;
+  }
+  .btn-danger {
+    @apply border border-orange text-orange bg-orange/[0.15] font-semibold px-4 py-2 rounded-lg hover:bg-orange/[0.25] transition-colors;
+  }
+  .card {
+    @apply bg-offwhite/[0.03] border border-border rounded-xl p-6;
+  }
+  .input {
+    @apply bg-transparent border border-offwhite/[0.12] rounded-lg px-4 py-2 text-offwhite placeholder:text-muted focus:border-teal focus:outline-none transition-colors;
+  }
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-teal { @apply bg-teal/20 text-teal; }
+  .badge-orange { @apply bg-orange/15 text-orange; }
+  .badge-muted { @apply bg-offwhite/10 text-muted; }
+}
