@@ -61,7 +61,7 @@ export default function Header({ isAdmin = false }) {
           </Link>
           <div className="relative">
             <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-offwhite/5 transition-colors">
-              <div className="w-8 h-8 rounded-full bg-teal/20 flex items-center justify-center text-teal font-semibold text-sm">
+              <div className="w-8 h-8 rounded-full bg-teal/20 flex items-center justify-center text-teal font-semibold text-sm" suppressHydrationWarning>
                 {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
               </div>
               <ChevronDown size={16} className="text-muted" />

@@ -79,7 +79,7 @@ export default function DashboardSidebar() {
         </nav>
         <div className="p-4 border-t border-border">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-teal/20 flex items-center justify-center text-teal font-semibold">
+            <div className="w-10 h-10 rounded-full bg-teal/20 flex items-center justify-center text-teal font-semibold" suppressHydrationWarning>
               {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
