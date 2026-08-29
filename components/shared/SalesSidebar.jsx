@@ -59,8 +59,8 @@ export default function SalesSidebar() {
               {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-offwhite truncate">{user?.fullName}</p>
-              <p className="text-xs text-muted truncate">{user?.email}</p>
+              <p className="text-sm font-medium text-offwhite truncate" suppressHydrationWarning>{user?.fullName}</p>
+              <p className="text-xs text-muted truncate" suppressHydrationWarning>{user?.email}</p>
             </div>
           </div>
           <button onClick={logout} className="btn-danger w-full flex items-center justify-center gap-2">

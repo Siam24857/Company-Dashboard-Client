@@ -60,8 +60,8 @@ export default function AdminSidebar() {
               {user?.fullName?.charAt(0)?.toUpperCase() || 'A'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-offwhite truncate">{user?.fullName || 'Admin'}</p>
-              <p className="text-xs text-muted truncate">{user?.email || 'admin@ideon.com'}</p>
+              <p className="text-sm font-medium text-offwhite truncate" suppressHydrationWarning>{user?.fullName || 'Admin'}</p>
+              <p className="text-xs text-muted truncate" suppressHydrationWarning>{user?.email || 'admin@ideon.com'}</p>
             </div>
           </div>
           <button onClick={logout} className="btn-danger w-full flex items-center justify-center gap-2">
