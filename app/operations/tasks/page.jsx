@@ -30,7 +30,7 @@ export default function OperationsTasksPage() {
       const projects = res.data.projects || []
       const allTasks = []
       for (const project of projects) {
-        const taskRes = await api.get(`/projects/${project.id}/tasks`)
+        const taskRes = await api.get(`/projects/${project.id}/tasks?assignedTo=me`)
         const projectTasks = taskRes.data.tasks || []
         allTasks.push(...projectTasks.map(t => ({ ...t, projectTitle: project.title, projectId: project.id })))
       }
