@@ -23,6 +23,8 @@ export default function MessagesPanel({ canBroadcast = false }) {
   // Global communication feed — only admins can write.
   const [posts, setPosts] = useState([])
   const [postLoading, setPostLoading] = useState(true)
+  const [recipients, setRecipients] = useState([])
+  const [target, setTarget] = useState('ALL')
   const [broadcastText, setBroadcastText] = useState('')
   const [broadcasting, setBroadcasting] = useState(false)
 
@@ -48,6 +50,16 @@ export default function MessagesPanel({ canBroadcast = false }) {
   }, [])
 
   useEffect(() => { fetchPosts() }, [fetchPosts])
+
+  useEffect(() => {
+    if (!canBroadcast) return
+    api.get('/users', { params: { status: 'ACTIVE', limit: 100 } })
+      .then((res) => {
+        const list = Array.isArray(res.data?.users) ? res.data.users : []
+        setRecipients(list)
+      })
+      .catch(() => { /* recipient picker is optional */ })
+  }, [canBroadcast])
 
   const fetchConversations = useCallback(async () => {
     setLoading(true)
@@ -112,13 +124,18 @@ export default function MessagesPanel({ canBroadcast = false }) {
     if (!broadcastText.trim()) return
     setBroadcasting(true)
     try {
-      await api.post('/messages/broadcast', { content: broadcastText })
+      if (target === 'ALL') {
+        await api.post('/messages/broadcast', { content: broadcastText })
+        toast.success('Message sent to everyone')
+        fetchPosts()
+      } else {
+        await api.post('/messages', { receiverId: target, content: broadcastText })
+        toast.success('Message sent')
+      }
       setBroadcastText('')
-      toast.success('Broadcast sent to everyone')
-      fetchPosts()
       fetchConversations()
     } catch (err) {
-      toast.error(err?.response?.data?.error || 'Failed to broadcast')
+      toast.error(err?.response?.data?.error || 'Failed to send message')
     } finally {
       setBroadcasting(false)
     }
@@ -173,11 +190,24 @@ export default function MessagesPanel({ canBroadcast = false }) {
 
         {canBroadcast && (
           <form onSubmit={broadcast} className="border-b border-[var(--stroke)] p-4">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <label className="text-[11px] font-medium uppercase tracking-wider text-[var(--text-2)]">Send to</label>
+              <select
+                value={target}
+                onChange={(e) => setTarget(e.target.value)}
+                className="h-9 rounded-lg border border-[var(--stroke)] bg-[var(--glass-soft)] px-2.5 text-xs text-[var(--text-0)] outline-none transition-colors focus:border-[var(--cyan)]"
+              >
+                <option value="ALL">Everyone</option>
+                {recipients.map((u) => (
+                  <option key={u.id} value={u.id}>{u.fullName}{u.email ? ` — ${u.email}` : ''}</option>
+                ))}
+              </select>
+            </div>
             <textarea
               value={broadcastText}
               onChange={(e) => setBroadcastText(e.target.value)}
               rows={2}
-              placeholder="Write an update to the whole company..."
+              placeholder={target === 'ALL' ? 'Write an update to the whole company...' : 'Type your message...'}
               className="w-full resize-none rounded-lg border border-[var(--stroke)] bg-[var(--glass-soft)] px-3 py-2.5 text-sm text-[var(--text-0)] outline-none transition-colors focus:border-[var(--cyan)]"
             />
             <div className="mt-2 flex justify-end">
@@ -187,7 +217,7 @@ export default function MessagesPanel({ canBroadcast = false }) {
                 className="btn-primary !px-4 !py-2 text-xs disabled:opacity-40"
               >
                 {broadcasting ? <Loader2 size={14} className="mr-1.5 inline animate-spin" /> : <Send size={14} className="mr-1.5 inline" />}
-                Broadcast to everyone
+                {target === 'ALL' ? 'Send to everyone' : 'Send message'}
               </button>
             </div>
           </form>
