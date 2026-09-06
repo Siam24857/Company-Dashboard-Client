@@ -3,11 +3,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
 import { cn, timeAgo } from '@/lib/utils'
-import { Search, Send, MessageSquare, Loader2 } from 'lucide-react'
+import { Search, Send, MessageSquare, Loader2, Megaphone } from 'lucide-react'
 import EmptyState from '@/components/ui/EmptyState'
 import ErrorState from '@/components/ui/ErrorState'
 
-export default function MessagesPanel() {
+export default function MessagesPanel({ canBroadcast = false }) {
   const [currentUserId, setCurrentUserId] = useState(null)
   const [conversations, setConversations] = useState([])
   const [messages, setMessages] = useState([])
@@ -19,6 +19,13 @@ export default function MessagesPanel() {
   const [sending, setSending] = useState(false)
   const [error, setError] = useState(false)
   const [msgError, setMsgError] = useState(false)
+
+  // Global communication feed — only admins can write.
+  const [posts, setPosts] = useState([])
+  const [postLoading, setPostLoading] = useState(true)
+  const [broadcastText, setBroadcastText] = useState('')
+  const [broadcasting, setBroadcasting] = useState(false)
+
   const scrollRef = useRef(null)
 
   useEffect(() => {
@@ -27,6 +34,20 @@ export default function MessagesPanel() {
       if (raw) setCurrentUserId(JSON.parse(raw).id)
     } catch { /* ignore */ }
   }, [])
+
+  const fetchPosts = useCallback(async () => {
+    setPostLoading(true)
+    try {
+      const res = await api.get('/messages/global')
+      setPosts(res.data.posts || [])
+    } catch (err) {
+      toast.error('Company feed is unreachable right now.')
+    } finally {
+      setPostLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchPosts() }, [fetchPosts])
 
   const fetchConversations = useCallback(async () => {
     setLoading(true)
@@ -86,6 +107,23 @@ export default function MessagesPanel() {
     }
   }
 
+  const broadcast = async (e) => {
+    e.preventDefault()
+    if (!broadcastText.trim()) return
+    setBroadcasting(true)
+    try {
+      await api.post('/messages/broadcast', { content: broadcastText })
+      setBroadcastText('')
+      toast.success('Broadcast sent to everyone')
+      fetchPosts()
+      fetchConversations()
+    } catch (err) {
+      toast.error(err?.response?.data?.error || 'Failed to broadcast')
+    } finally {
+      setBroadcasting(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -113,9 +151,80 @@ export default function MessagesPanel() {
       <div>
         <p className="mono text-xs uppercase tracking-[0.22em] text-[var(--text-2)]">Comms</p>
         <h1 className="mt-1.5 font-display text-2xl font-bold tracking-tight text-[var(--text-0)] md:text-3xl">Messages</h1>
-        <p className="mt-1 text-sm text-[var(--text-1)]">Direct conversations with your team.</p>
+        <p className="mt-1 text-sm text-[var(--text-1)]">Company broadcasts and direct conversations with your team.</p>
       </div>
 
+      {/* Global communication feed — everyone reads, only admin writes */}
+      <section className="rounded-2xl border border-[var(--stroke)] bg-gradient-to-b from-[var(--card-hi)] to-[var(--card-lo)]">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--stroke)] px-5 py-3.5">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'var(--cyan-soft)', color: 'var(--cyan)' }}>
+              <Megaphone size={15} />
+            </span>
+            <div>
+              <h2 className="text-sm font-semibold text-[var(--text-0)]">Company feed</h2>
+              <p className="text-[11px] text-[var(--text-2)]">Global updates from the admin — read-only for everyone else.</p>
+            </div>
+          </div>
+          <span className="rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider" style={{ background: 'var(--cyan-faint)', color: 'var(--cyan)' }}>
+            {canBroadcast ? 'Admin composer' : 'Read only'}
+          </span>
+        </div>
+
+        {canBroadcast && (
+          <form onSubmit={broadcast} className="border-b border-[var(--stroke)] p-4">
+            <textarea
+              value={broadcastText}
+              onChange={(e) => setBroadcastText(e.target.value)}
+              rows={2}
+              placeholder="Write an update to the whole company..."
+              className="w-full resize-none rounded-lg border border-[var(--stroke)] bg-[var(--glass-soft)] px-3 py-2.5 text-sm text-[var(--text-0)] outline-none transition-colors focus:border-[var(--cyan)]"
+            />
+            <div className="mt-2 flex justify-end">
+              <button
+                type="submit"
+                disabled={broadcasting || !broadcastText.trim()}
+                className="btn-primary !px-4 !py-2 text-xs disabled:opacity-40"
+              >
+                {broadcasting ? <Loader2 size={14} className="mr-1.5 inline animate-spin" /> : <Send size={14} className="mr-1.5 inline" />}
+                Broadcast to everyone
+              </button>
+            </div>
+          </form>
+        )}
+
+        <div className="max-h-72 overflow-y-auto p-4">
+          {postLoading ? (
+            <div className="flex items-center justify-center py-8"><Loader2 size={16} className="animate-spin text-[var(--text-2)]" /></div>
+          ) : posts.length === 0 ? (
+            <EmptyState
+              className="border-0"
+              icon={MessageSquare}
+              title="No company broadcasts yet"
+              description={canBroadcast ? 'Write the first update your team will see.' : 'Check back when the admin shares an update.'}
+            />
+          ) : (
+            <ul className="space-y-2.5">
+              {posts.map((post) => (
+                <li key={post.id} className="flex gap-3 rounded-xl border border-[var(--stroke)] bg-[var(--glass-soft)] p-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold" style={{ background: 'var(--cyan-soft)', color: 'var(--cyan)' }}>
+                    {post.sender?.fullName?.charAt(0)?.toUpperCase()}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-baseline gap-x-2">
+                      <p className="text-xs font-semibold text-[var(--text-0)]">{post.sender?.fullName}</p>
+                      <span className="text-[10px] text-[var(--text-2)]">{post.createdAt ? timeAgo(post.createdAt) : ''}</span>
+                    </div>
+                    <p className="mt-0.5 text-sm leading-relaxed text-[var(--text-1)]">{post.content}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+
+      {/* Direct messaging */}
       <div className="flex h-[calc(100vh-13rem)] min-h-[480px] overflow-hidden rounded-2xl border border-[var(--stroke)] bg-gradient-to-b from-[var(--card-hi)] to-[var(--card-lo)]">
         <div className="hidden w-80 flex-col border-r border-[var(--stroke)] lg:flex">
           <div className="border-b border-[var(--stroke)] p-4">
