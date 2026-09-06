@@ -1,16 +1,19 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Bell, ChevronDown, User } from 'lucide-react'
+import { Bell, ChevronDown, User, Wallet, LogOut, LayoutDashboard } from 'lucide-react'
 import { useAuthStore } from '@/store'
 import { api } from '@/lib/api'
+import { cn } from '@/lib/utils'
+import { hubLabel } from '@/lib/routes'
 
 export default function Header({ isAdmin = false }) {
   const pathname = usePathname()
   const { user, logout } = useAuthStore()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const menuRef = useRef(null)
 
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -27,13 +30,25 @@ export default function Header({ isAdmin = false }) {
     return () => clearInterval(interval)
   }, [fetchUnreadCount])
 
-  const getPageTitle = () => {
-    if (isAdmin) {
-      const adminPath = pathname.replace('/admin', '') || '/'
-      return adminPath.charAt(1).toUpperCase() + adminPath.slice(2).replace('/[', ' › ').replace(']', '') || 'Dashboard'
+  useEffect(() => {
+    const onClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setDropdownOpen(false)
     }
-    const dashboardPath = pathname.replace('/dashboard', '') || '/'
-    return dashboardPath.charAt(1).toUpperCase() + dashboardPath.slice(2).replace('/[', ' › ').replace(']', '') || 'Overview'
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [])
+
+  const getPageTitle = () => {
+    const title = (() => {
+      if (isAdmin) {
+        const p = pathname.replace('/admin', '') || '/'
+        return p === '/' ? 'Dashboard' : p.slice(1).split('/').filter(Boolean).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' › ')
+      }
+      const p = pathname.replace('/business', '').replace('/sales', '').replace('/operations', '') || '/'
+      if (p === '/') return hubLabel(user?.role)
+      return p.slice(1).split('/').filter(Boolean).map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' › ')
+    })()
+    return title || 'Dashboard'
   }
 
   const getNotificationPath = () => {
@@ -44,40 +59,85 @@ export default function Header({ isAdmin = false }) {
     return '/dashboard/notifications'
   }
 
+  const getProfilePath = () => {
+    if (isAdmin) return '/admin'
+    if (user?.role === 'BUSINESS_MANAGEMENT') return '/business/profile'
+    if (user?.role === 'SALES_MANAGEMENT') return '/sales/profile'
+    if (user?.role === 'OPERATIONS_DEVELOPER') return '/operations/profile'
+    return '/dashboard/profile'
+  }
+
+  const getBalancePath = () => {
+    if (isAdmin) return '/admin'
+    if (user?.role === 'BUSINESS_MANAGEMENT') return '/business/balance'
+    if (user?.role === 'SALES_MANAGEMENT') return '/sales/balance'
+    if (user?.role === 'OPERATIONS_DEVELOPER') return '/operations/balance'
+    return '/dashboard'
+  }
+
+  const getHomePath = () => {
+    if (isAdmin) return '/admin'
+    if (user?.role === 'BUSINESS_MANAGEMENT') return '/business'
+    if (user?.role === 'SALES_MANAGEMENT') return '/sales'
+    if (user?.role === 'OPERATIONS_DEVELOPER') return '/operations'
+    return '/dashboard'
+  }
+
+  const menuItem = 'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[var(--text-1)] transition-colors hover:bg-[var(--glass-soft)] hover:text-[var(--text-0)]'
+
   return (
-    <header className="sticky top-0 z-30 h-16 border-b border-border bg-primary/95 backdrop-blur">
-      <div className="flex items-center justify-between h-full px-6">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold text-offwhite">{getPageTitle()}</h2>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link href={getNotificationPath()} className="relative p-2 text-muted hover:text-offwhite transition-colors">
-            <Bell size={20} />
-            {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-orange text-primary text-[10px] font-bold rounded-full px-1">
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </span>
-            )}
-          </Link>
-          <div className="relative">
-            <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-offwhite/5 transition-colors">
-              <div className="w-8 h-8 rounded-full bg-teal/20 flex items-center justify-center text-teal font-semibold text-sm" suppressHydrationWarning>
-                {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-[var(--stroke)] bg-[var(--bg-1)]/80 px-6 backdrop-blur-xl">
+      <div className="min-w-0">
+        <p className="truncate font-display text-base font-semibold text-[var(--text-0)]">{getPageTitle()}</p>
+        <p className="mono hidden text-[10px] uppercase tracking-[0.22em] text-[var(--text-2)] sm:block">
+          {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+        </p>
+      </div>
+      <div className="flex items-center gap-3">
+        <Link href={getNotificationPath()} className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--stroke)] text-[var(--text-1)] transition-colors hover:border-[var(--cyan)] hover:text-[var(--cyan)]" aria-label="Notifications">
+          <Bell size={17} strokeWidth={1.75} />
+          {unreadCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-[#04120f]" style={{ background: 'var(--cyan)', boxShadow: '0 0 8px var(--cyan)' }}>
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+        </Link>
+
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setDropdownOpen((o) => !o)}
+            className="flex items-center gap-2 rounded-lg border border-[var(--stroke)] bg-[var(--glass-soft)] p-1.5 pr-2.5 transition-colors hover:border-[var(--cyan)]/50"
+            aria-haspopup="menu"
+            aria-expanded={dropdownOpen}
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold" style={{ background: 'var(--cyan-soft)', color: 'var(--cyan)' }} suppressHydrationWarning>
+              {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+            </span>
+            <ChevronDown size={14} className={cn('text-[var(--text-2)] transition-transform', dropdownOpen && 'rotate-180')} />
+          </button>
+
+          {dropdownOpen && (
+            <div role="menu" className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-[var(--stroke)] bg-[var(--bg-2)] p-1.5 shadow-2xl">
+              <div className="border-b border-[var(--stroke)] px-3 py-2.5">
+                <p className="truncate text-sm font-semibold text-[var(--text-0)]" suppressHydrationWarning>{user?.fullName}</p>
+                <p className="truncate text-xs text-[var(--text-2)]" suppressHydrationWarning>{user?.email}</p>
               </div>
-              <ChevronDown size={16} className="text-muted" />
-            </button>
-            {dropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-[#0c0c18] border border-border rounded-lg shadow-lg py-2 z-50">
-                <Link href={isAdmin ? '/admin' : user?.role === 'BUSINESS_MANAGEMENT' ? '/business' : user?.role === 'SALES_MANAGEMENT' ? '/sales' : user?.role === 'OPERATIONS_DEVELOPER' ? '/operations' : '/dashboard'} className="flex items-center gap-2 px-4 py-2 text-sm text-offwhite hover:bg-offwhite/5">
-                  <User size={16} />
-                  Profile
+              <div className="mt-1.5 space-y-0.5">
+                <Link href={getHomePath()} role="menuitem" onClick={() => setDropdownOpen(false)} className={menuItem}>
+                  <LayoutDashboard size={15} strokeWidth={1.75} /> Dashboard
                 </Link>
-                <button onClick={logout} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-orange hover:bg-offwhite/5 text-left">
-                  Logout
+                <Link href={getBalancePath()} role="menuitem" onClick={() => setDropdownOpen(false)} className={menuItem}>
+                  <Wallet size={15} strokeWidth={1.75} /> Wallet &amp; balance
+                </Link>
+                <Link href={getProfilePath()} role="menuitem" onClick={() => setDropdownOpen(false)} className={menuItem}>
+                  <User size={15} strokeWidth={1.75} /> My profile
+                </Link>
+                <button role="menuitem" onClick={logout} className={cn(menuItem, '!text-[var(--red)] hover:!text-[var(--red)]')}>
+                  <LogOut size={15} strokeWidth={1.75} /> Logout
                 </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </header>

@@ -26,11 +26,13 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="flex h-screen bg-primary">
+    <div className="flex h-screen overflow-hidden bg-[var(--bg-0)] text-[var(--text-0)]">
       <AdminSidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Header isAdmin={true} />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-[var(--bg-0)]">
+          <div className="mx-auto max-w-6xl p-6 lg:p-8">{children}</div>
+        </main>
       </div>
     </div>
   )
