@@ -1,2 +1,7 @@
 export { default as useAuthStore } from './auth.store'
 export { default as useUIStore } from './ui.store'
+export { default as useDashboardStore } from './dashboard.store'
+export { default as useLiveStore } from './live.store'
+export { default as useFlagsStore } from './flags.store'
+export { default as useAdminStore } from './admin.store'
+export { default as useTeamStore } from './team.store'
