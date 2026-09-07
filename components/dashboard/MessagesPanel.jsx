@@ -135,7 +135,7 @@ export default function MessagesPanel({ canBroadcast = false }) {
       setBroadcastText('')
       fetchConversations()
     } catch (err) {
-      toast.error(err?.response?.data?.error || 'Failed to send message')
+      toast.error(err?.response?.data?.message || 'Failed to send message')
     } finally {
       setBroadcasting(false)
     }
