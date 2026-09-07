@@ -10,7 +10,7 @@ import {
   Globe, Headphones, LifeBuoy, HelpCircle, Wallet, ChevronRight, CreditCard,
   LineChart, Users2, Layers, Gauge, Bug, Lock, History, Hash, FileBarChart,
   Printer, Megaphone, Navigation, LayoutGrid, BookOpenCheck, UserCircle,
-  Webhook, ShieldCheck, CheckCircle2, ExternalLink
+  Webhook, ShieldCheck, CheckCircle2, ExternalLink, AlertCircle, Database
 } from 'lucide-react'
 import { useAuthStore } from '@/store'
 import { api } from '@/lib/api'

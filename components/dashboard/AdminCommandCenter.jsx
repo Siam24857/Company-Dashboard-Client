@@ -6,7 +6,7 @@ import {
   TrendingUp, TrendingDown, DollarSign, Wallet, MessageSquare, Bell,
   Send, Calendar, Activity, ArrowUpRight, Zap, Shield, Eye, BarChart3,
   Target, Briefcase, Loader2, RefreshCw, ChevronRight, Lightbulb, HardDrive,
-  Database, PlayCircle, PauseCircle, FileText, Headphones, Globe
+  Database, PlayCircle, PauseCircle, FileText, Headphones, Globe, AlertCircle
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { cn, timeAgo, fmtNum } from '@/lib/utils'
@@ -401,6 +401,7 @@ export default function AdminCommandCenter() {
             </Link>
           ))}
         </div>
+        <div style={{ display: 'none' }}><AlertCircle /></div>
       </div>
     </div>
   )
