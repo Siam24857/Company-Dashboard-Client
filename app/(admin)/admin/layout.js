@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import AdminSidebar from '@/components/shared/AdminSidebar'
 import Header from '@/components/shared/Header'
+import AdminGlobalSearch from '@/components/shared/AdminGlobalSearch'
 
 export default function AdminLayout({ children }) {
   const router = useRouter()
@@ -26,12 +27,17 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--bg-0)] text-[var(--text-0)]">
+    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
       <AdminSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Header isAdmin={true} />
-        <main className="flex-1 overflow-y-auto bg-[var(--bg-0)]">
-          <div className="mx-auto max-w-6xl p-6 lg:p-8">{children}</div>
+        <div className="flex items-center justify-between gap-3 pr-4">
+          <Header isAdmin={true} />
+          <div className="hidden lg:block">
+            <AdminGlobalSearch />
+          </div>
+        </div>
+        <main className="flex-1 overflow-y-auto" style={{ background: 'var(--bg)' }}>
+          <div className="mx-auto max-w-7xl p-4 lg:p-6">{children}</div>
         </main>
       </div>
     </div>

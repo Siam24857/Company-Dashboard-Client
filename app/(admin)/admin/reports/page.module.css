@@ -1,0 +1,388 @@
+.page {
+  padding: 24px;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-0);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-2);
+  margin-top: 4px;
+}
+
+.backBtn {
+  background: none;
+  border: 1px solid var(--stroke);
+  color: var(--text-1);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.backBtn:hover {
+  background: var(--card-lo);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--card-lo);
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card:hover {
+  background: var(--card-hi);
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+
+.cardIcon {
+  font-size: 36px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-0);
+}
+
+.cardDesc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.generateBtn {
+  align-self: flex-start;
+  background: var(--cyan);
+  color: #000;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.generateBtn:hover {
+  filter: brightness(1.1);
+}
+
+.configPanel {
+  background: var(--card-lo);
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.configSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.configLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dateOptions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dateBtn {
+  background: var(--card-hi);
+  border: 1px solid var(--stroke);
+  color: var(--text-2);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dateBtn:hover {
+  border-color: var(--cyan);
+  color: var(--text-0);
+}
+
+.dateBtnActive {
+  background: var(--cyan);
+  color: #000;
+  border-color: var(--cyan);
+  font-weight: 600;
+}
+
+.formatBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card-hi);
+  border: 1px solid var(--stroke);
+  color: var(--text-1);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  width: fit-content;
+}
+
+.configActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.genBtn {
+  background: var(--cyan);
+  color: #000;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.genBtn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.genBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.downloadBtn {
+  background: var(--card-hi);
+  color: var(--text-0);
+  border: 1px solid var(--stroke);
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.downloadBtn:hover {
+  border-color: var(--cyan);
+}
+
+.loadingOverlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 0;
+  color: var(--text-2);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--stroke);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.preview {
+  background: var(--card-lo);
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.previewContent {
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.previewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.previewLogo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoIcon {
+  font-size: 28px;
+}
+
+.logoText {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--cyan);
+  letter-spacing: 1px;
+}
+
+.previewTitle h2 {
+  font-size: 24px;
+  color: var(--text-0);
+  text-align: right;
+  margin-bottom: 4px;
+}
+
+.previewTitle p {
+  font-size: 13px;
+  color: var(--text-2);
+  text-align: right;
+}
+
+.previewDivider {
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+  margin: 24px 0;
+}
+
+.previewSection {
+  margin-bottom: 32px;
+}
+
+.previewSection h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-0);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.previewStat {
+  background: var(--card-hi);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.previewStatValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.previewStatLabel {
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.chartPlaceholder {
+  background: var(--card-hi);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.chartBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 120px;
+}
+
+.chartBar {
+  flex: 1;
+  background: linear-gradient(to top, var(--cyan), var(--blue));
+  border-radius: 4px 4px 0 0;
+  min-height: 8px;
+}
+
+.chartLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.findingsList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.findingsList li {
+  padding: 12px 16px;
+  background: var(--card-hi);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-1);
+  border-left: 3px solid var(--cyan);
+}
+
+.previewFooter {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.footerDivider {
+  height: 1px;
+  background: var(--stroke);
+  margin-bottom: 16px;
+}
+
+.previewFooter p {
+  font-size: 12px;
+  color: var(--text-2);
+}

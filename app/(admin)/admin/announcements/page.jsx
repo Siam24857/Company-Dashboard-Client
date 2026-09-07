@@ -1,151 +1,276 @@
-'use client'
-import { useCallback, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
-import { api } from '@/lib/api'
-import { timeAgo } from '@/lib/utils'
-import Pill from '@/components/ui/Pill'
-import { Plus, Megaphone, Loader2, X } from 'lucide-react'
-import EmptyState from '@/components/ui/EmptyState'
-import ErrorState from '@/components/ui/ErrorState'
+'use client';
 
-const PRIORITY_TONE = { NORMAL: 'info', IMPORTANT: 'warn', URGENT: 'critical' }
-const TARGET_TONE = { BUSINESS_MANAGEMENT: 'info', SALES_MANAGEMENT: 'info', OPERATIONS_DEVELOPER: 'info' }
+import { useState, useEffect, useCallback } from 'react';
+import { api } from '@/lib/api';
+import { cn, timeAgo } from '@/lib/utils';
+import ErrorState from '@/components/ui/ErrorState';
+import styles from './page.module.css';
 
-export default function AdminAnnouncementsPage() {
-  const [announcements, setAnnouncements] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-  const [showForm, setShowForm] = useState(false)
-  const [creating, setCreating] = useState(false)
-  const [formData, setFormData] = useState({ title: '', content: '', priority: 'NORMAL', targetRole: '' })
+const PRIORITY_STYLES = {
+  NORMAL: { label: 'Normal', className: styles.priorityNormal },
+  IMPORTANT: { label: 'Important', className: styles.priorityImportant },
+  URGENT: { label: 'Urgent', className: styles.priorityUrgent },
+};
 
-  const fetchAnnouncements = useCallback(async () => {
-    setLoading(true)
-    setError(false)
-    try {
-      const res = await api.get('/announcements')
-      setAnnouncements(res.data.announcements)
-    } catch (err) {
-      setError(true)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+const INITIAL_FORM = {
+  title: '',
+  content: '',
+  priority: 'NORMAL',
+  targetRole: 'ALL',
+  publishDate: '',
+  expiryDate: '',
+};
 
-  useEffect(() => { fetchAnnouncements() }, [fetchAnnouncements])
-
-  const createAnnouncement = async (e) => {
-    e.preventDefault()
-    setCreating(true)
-    try {
-      await api.post('/announcements', formData)
-      toast.success('Announcement published')
-      setShowForm(false)
-      setFormData({ title: '', content: '', priority: 'NORMAL', targetRole: '' })
-      fetchAnnouncements()
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to create announcement')
-    } finally {
-      setCreating(false)
-    }
-  }
-
-  if (loading) {
-    return <div className="space-y-6"><div className="skeleton h-8 w-56 rounded-lg" />{[0, 1, 2].map((i) => <div key={i} className="skeleton h-36 rounded-2xl" />)}</div>
-  }
-
-  if (error) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <ErrorState title="Could not load announcements" onRetry={fetchAnnouncements} />
+function Skeleton() {
+  return (
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <div className={styles.skeletonLine} style={{ width: 280, height: 32 }} />
+        <div className={styles.skeletonLine} style={{ width: 160, height: 40 }} />
       </div>
-    )
-  }
+      <div className={styles.annList}>
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className={styles.skeletonCard} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-  const inputCls = 'h-10 w-full rounded-lg border border-[var(--stroke)] bg-[var(--glass-soft)] px-3 text-sm text-[var(--text-0)] outline-none transition-colors focus:border-[var(--cyan)]'
-  const labelCls = 'mb-1.5 block text-xs font-medium text-[var(--text-1)]'
+function ConfirmDialog({ message, onConfirm, onCancel }) {
+  return (
+    <div className={styles.overlay} onClick={onCancel}>
+      <div className={styles.dialog} onClick={e => e.stopPropagation()}>
+        <h3>Confirm Delete</h3>
+        <p>{message}</p>
+        <div className={styles.dialogActions}>
+          <button className={styles.cancelBtn} onClick={onCancel}>Cancel</button>
+          <button className={styles.deleteBtn} onClick={onConfirm}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AnnouncementModal({ announcement, onClose, onSave }) {
+  const [form, setForm] = useState(
+    announcement ? {
+      title: announcement.title || '',
+      content: announcement.content || '',
+      priority: announcement.priority || 'NORMAL',
+      targetRole: announcement.targetRole || 'ALL',
+      publishDate: (announcement.publishedAt || announcement.publishDate || '').slice(0, 10),
+      expiryDate: (announcement.expiresAt || announcement.expiryDate || '').slice(0, 10),
+    } : INITIAL_FORM
+  );
+  const [saving, setSaving] = useState(false);
+
+  const handleChange = (field) => (e) => {
+    setForm(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const payload = {
+        title: form.title,
+        content: form.content,
+        priority: form.priority,
+        targetRole: form.targetRole === 'ALL' ? null : form.targetRole,
+        publishedAt: form.publishDate || new Date().toISOString(),
+        expiresAt: form.expiryDate || undefined,
+      };
+      if (announcement?.id || announcement?._id) {
+        await api.patch(`/announcements/${announcement.id || announcement._id}`, payload);
+      } else {
+        await api.post('/announcements', payload);
+      }
+      onSave();
+    } catch (err) {
+      console.error('Save failed:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="mono text-xs uppercase tracking-[0.22em] text-[var(--text-2)]">Broadcast</p>
-          <h1 className="mt-1.5 font-display text-2xl font-bold tracking-tight text-[var(--text-0)] md:text-3xl">Announcements</h1>
-          <p className="mt-1 text-sm text-[var(--text-1)]">Publish and manage company-wide communications.</p>
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <div className={styles.modalHeader}>
+          <h2>{announcement ? 'Edit Announcement' : 'Create Announcement'}</h2>
+          <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
-        <button type="button" onClick={() => setShowForm((s) => !s)} className="btn-primary">
-          {showForm ? <X size={15} /> : <Plus size={15} />}
-          {showForm ? 'Close composer' : 'New announcement'}
-        </button>
-      </div>
-
-      {showForm && (
-        <form onSubmit={createAnnouncement} className="rounded-2xl border border-[var(--cyan)]/30 bg-[var(--cyan-soft)] p-5">
-          <h3 className="text-sm font-semibold text-[var(--text-0)]">Create announcement</h3>
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <div>
-              <label className={labelCls}>Title</label>
-              <input type="text" required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className={inputCls} placeholder="e.g. New project kickoff" />
-            </div>
-            <div className="md:col-span-2">
-              <label className={labelCls}>Content</label>
-              <textarea required value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} rows={3} className={`${inputCls} h-auto py-2`} placeholder="What does the team need to know?" />
-            </div>
-            <div>
-              <label className={labelCls}>Priority</label>
-              <select value={formData.priority} onChange={(e) => setFormData({ ...formData, priority: e.target.value })} className={inputCls}>
+        <form onSubmit={handleSubmit} className={styles.modalForm}>
+          <div className={styles.formGroup}>
+            <label>Title</label>
+            <input
+              type="text"
+              value={form.title}
+              onChange={handleChange('title')}
+              placeholder="Announcement title"
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Content</label>
+            <textarea
+              value={form.content}
+              onChange={handleChange('content')}
+              placeholder="Write your announcement..."
+              rows={5}
+              required
+            />
+          </div>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Priority</label>
+              <select value={form.priority} onChange={handleChange('priority')}>
                 <option value="NORMAL">Normal</option>
                 <option value="IMPORTANT">Important</option>
                 <option value="URGENT">Urgent</option>
               </select>
             </div>
-            <div>
-              <label className={labelCls}>Target</label>
-              <select value={formData.targetRole} onChange={(e) => setFormData({ ...formData, targetRole: e.target.value })} className={inputCls}>
-                <option value="">All users</option>
-                <option value="BUSINESS_MANAGEMENT">Business Management</option>
-                <option value="SALES_MANAGEMENT">Sales Management</option>
-                <option value="OPERATIONS_DEVELOPER">Operations Developer</option>
+            <div className={styles.formGroup}>
+              <label>Target Role</label>
+              <select value={form.targetRole} onChange={handleChange('targetRole')}>
+                <option value="ALL">All Roles</option>
+                <option value="ADMIN">Admin</option>
+                <option value="MANAGER">Manager</option>
+                <option value="EMPLOYEE">Employee</option>
+                <option value="USER">User</option>
               </select>
             </div>
           </div>
-          <div className="mt-5 flex justify-end gap-3">
-            <button type="button" onClick={() => setShowForm(false)} className="btn">Cancel</button>
-            <button type="submit" disabled={creating} className="btn-primary">
-              {creating && <Loader2 size={15} className="animate-spin" />}
-              Publish
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Publish Date</label>
+              <input type="date" value={form.publishDate} onChange={handleChange('publishDate')} />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Expiry Date</label>
+              <input type="date" value={form.expiryDate} onChange={handleChange('expiryDate')} />
+            </div>
+          </div>
+          <div className={styles.modalActions}>
+            <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancel</button>
+            <button type="submit" className={styles.saveBtn} disabled={saving}>
+              {saving ? 'Saving...' : announcement ? 'Update' : 'Create'}
             </button>
           </div>
         </form>
-      )}
+      </div>
+    </div>
+  );
+}
 
-      {announcements.length === 0 ? (
-        <div className="rounded-2xl border border-[var(--stroke)] bg-gradient-to-b from-[var(--card-hi)] to-[var(--card-lo)] p-10">
-          <EmptyState icon={Megaphone} title="No announcements yet" description="Publish your first announcement to the team." />
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {announcements.map((a) => (
-            <article key={a.id} className="rounded-2xl border border-[var(--stroke)] bg-gradient-to-b from-[var(--card-hi)] to-[var(--card-lo)] p-5">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: 'var(--cyan-soft)', color: 'var(--cyan)' }}>
-                  <Megaphone size={15} strokeWidth={1.75} />
-                </span>
-                <div>
-                  <h3 className="text-sm font-semibold text-[var(--text-0)]">{a.title}</h3>
-                  <p className="text-[11px] text-[var(--text-2)]">{timeAgo(a.createdAt)}</p>
+export default function AnnouncementsPage() {
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+
+  const fetchAnnouncements = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/announcements');
+      setAnnouncements(res.data?.announcements || res.data || []);
+    } catch (err) {
+      setError(err.message || 'Failed to load announcements');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAnnouncements(); }, [fetchAnnouncements]);
+
+  const handleDelete = async () => {
+    if (!deleting) return;
+    try {
+      await api.delete(`/announcements/${deleting.id || deleting._id}`);
+      setAnnouncements(prev => prev.filter(a => (a.id || a._id) !== (deleting.id || deleting._id)));
+      setDeleting(null);
+    } catch (err) {
+      console.error('Delete failed:', err);
+    }
+  };
+
+  if (loading) return <Skeleton />;
+  if (error) return <ErrorState message={error} onRetry={fetchAnnouncements} />;
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Announcement Management</h1>
+        <button className={styles.createBtn} onClick={() => { setEditing(null); setShowModal(true); }}>
+          + New Announcement
+        </button>
+      </div>
+
+      <div className={styles.annList}>
+        {announcements.length === 0 ? (
+          <div className={styles.empty}>
+            <span className={styles.emptyIcon}>📢</span>
+            <p>No announcements yet. Create one to get started.</p>
+          </div>
+        ) : (
+          announcements.map((ann) => {
+            const id = ann.id || ann._id;
+            const priority = PRIORITY_STYLES[ann.priority] || PRIORITY_STYLES.NORMAL;
+            return (
+              <div key={id} className={styles.annCard}>
+                <div className={styles.annHeader}>
+                  <h3 className={styles.annTitle}>{ann.title}</h3>
+                  <span className={cn(styles.priorityBadge, priority.className)}>
+                    {priority.label}
+                  </span>
+                </div>
+                <p className={styles.annContent}>{ann.content}</p>
+                <div className={styles.annMeta}>
+                  <span>🎯 {ann.targetRole || 'All'}</span>
+                  <span>📅 {ann.publishDate ? new Date(ann.publishDate).toLocaleDateString() : 'N/A'}</span>
+                  {ann.expiryDate && (
+                    <span>⏰ Expires: {new Date(ann.expiryDate).toLocaleDateString()}</span>
+                  )}
+                  <span>👁 {ann.readCount || 0} reads</span>
+                </div>
+                <div className={styles.annActions}>
+                  <button
+                    className={styles.editBtn}
+                    onClick={() => { setEditing(ann); setShowModal(true); }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className={styles.deleteBtnSmall}
+                    onClick={() => setDeleting(ann)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
-              <p className="mt-3 text-sm leading-relaxed text-[var(--text-1)]">{a.content}</p>
-              <div className="mt-4 flex flex-wrap gap-2 border-t border-[var(--stroke)] pt-3">
-                <Pill tone={PRIORITY_TONE[a.priority] || 'info'}>{a.priority || 'NORMAL'}</Pill>
-                <Pill tone={TARGET_TONE[a.targetRole] || 'info'}>{a.targetRole?.replace(/_/g, ' ') || 'All users'}</Pill>
-                <Pill tone={a.isRead ? 'success' : 'warn'}>{a.isRead ? 'read' : 'unread'}</Pill>
-              </div>
-            </article>
-          ))}
-        </div>
+            );
+          })
+        )}
+      </div>
+
+      {showModal && (
+        <AnnouncementModal
+          announcement={editing}
+          onClose={() => { setShowModal(false); setEditing(null); }}
+          onSave={() => { setShowModal(false); setEditing(null); fetchAnnouncements(); }}
+        />
+      )}
+
+      {deleting && (
+        <ConfirmDialog
+          message={`Are you sure you want to delete "${deleting.title}"? This action cannot be undone.`}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleting(null)}
+        />
       )}
     </div>
-  )
+  );
 }

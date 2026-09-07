@@ -1,0 +1,245 @@
+.page {
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-0);
+}
+
+.markAllBtn {
+  background: var(--card-hi);
+  border: 1px solid var(--stroke);
+  color: var(--green);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.markAllBtn:hover {
+  border-color: var(--green);
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: var(--card-lo);
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statUnread {
+  border-left: 3px solid var(--amber);
+}
+
+.statRead {
+  border-left: 3px solid var(--green);
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-0);
+}
+
+.statLabel {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.filterBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  background: var(--card-lo);
+  border: 1px solid var(--stroke);
+  color: var(--text-2);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filterBtn:hover {
+  border-color: var(--cyan);
+  color: var(--text-0);
+}
+
+.filterBtnActive {
+  background: var(--cyan);
+  color: #000;
+  border-color: var(--cyan);
+}
+
+.notifList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notifItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--card-lo);
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  padding: 16px 20px;
+  transition: all 0.2s;
+}
+
+.notifUnread {
+  background: var(--card-hi);
+  border-color: color-mix(in srgb, var(--cyan) 30%, var(--stroke));
+}
+
+.notifIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.notifContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notifTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-0);
+}
+
+.notifMessage {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.notifTime {
+  font-size: 11px;
+  color: var(--text-2);
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.notifActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.readBtn {
+  background: none;
+  border: 1px solid var(--stroke);
+  color: var(--text-2);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.readBtn:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.unreadDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cyan);
+  flex-shrink: 0;
+}
+
+.readDot {
+  background: var(--stroke);
+  opacity: 0.4;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 0;
+  color: var(--text-2);
+}
+
+.emptyIcon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.empty p {
+  font-size: 15px;
+}
+
+.skeletonLine {
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--card-lo), var(--card-hi), var(--card-lo));
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonStat {
+  height: 80px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--card-lo), var(--card-hi), var(--card-lo));
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonPill {
+  width: 80px;
+  height: 32px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, var(--card-lo), var(--card-hi), var(--card-lo));
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonNotif {
+  height: 80px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--card-lo), var(--card-hi), var(--card-lo));
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

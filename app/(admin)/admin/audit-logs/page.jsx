@@ -1,97 +1,101 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
+import { useState, useEffect, useCallback } from 'react'
 import { api } from '@/lib/api'
-import { Activity, Filter } from 'lucide-react'
+import toast from 'react-hot-toast'
+import {
+  RefreshCw, Plus, History, Search, Filter,
+  Loader2, Clock, Shield, User, FileText,
+  AlertTriangle, CheckCircle2, XCircle,
+  ChevronDown, Calendar, Database, Server,
+  Activity, Cpu, HardDrive, Terminal,
+} from 'lucide-react'
+import { cn, timeAgo } from '@/lib/utils'
+import useDashboardStore from '@/store/dashboard.store'
+import ErrorState from '@/components/ui/ErrorState'
 
 export default function AdminAuditLogsPage() {
-  const router = useRouter()
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [actionFilter, setActionFilter] = useState('')
 
-  useEffect(() => {
-    fetchAuditLogs()
-  }, [page, actionFilter])
-
-  const fetchAuditLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     try {
-      const params = new URLSearchParams({ page: page.toString(), limit: '50' })
-      if (actionFilter) params.append('action', actionFilter)
-
-      const res = await api.get(`/admin/audit-logs?${params.toString()}`)
-      setLogs(res.data.logs)
-      setTotalPages(res.data.pagination.pages)
-    } catch (error) {
-      toast.error('Failed to fetch audit logs')
+      const res = await api.get('/admin/audit-logs', { params: { page, limit: 50 } })
+      setLogs(res.data.logs || [])
+      setTotalPages(res.data.totalPages || 1)
+    } catch (err) {
+      setError(true)
     } finally {
       setLoading(false)
     }
+  }, [page])
+
+  useEffect(() => { fetchLogs() }, [fetchLogs])
+
+  if (loading) {
+    return (
+      <div className="space-y-6 p-1">
+        <div className="skeleton h-8 w-48 rounded-lg" />
+        <div className="skeleton h-96 rounded-2xl" />
+      </div>
+    )
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="text-muted">Loading...</div></div>
+  if (error) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <ErrorState title="Failed to load audit logs" message="Could not reach the audit server." onRetry={fetchLogs} />
+      </div>
+    )
+  }
+
+  const resultColors = {
+    SUCCESS: 'bg-emerald-500/10 text-emerald-400',
+    FAILURE: 'bg-red-500/10 text-red-400',
+  }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-offwhite">Audit Logs</h1>
-      <div className="card">
-        <div className="flex items-center gap-4 mb-6">
-          <Filter size={20} className="text-muted" />
-          <select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)} className="input w-full sm:w-64">
-            <option value="">All Actions</option>
-            <option value="USER_APPROVED">User Approved</option>
-            <option value="USER_SUSPENDED">User Suspended</option>
-            <option value="USER_DELETED">User Deleted</option>
-            <option value="ATTENDANCE_UPDATED">Attendance Updated</option>
-            <option value="ATTENDANCE_OVERRIDDEN">Attendance Overridden</option>
-            <option value="TASK_APPROVED">Task Approved</option>
-            <option value="TASK_REJECTED">Task Rejected</option>
-            <option value="ANNOUNCEMENT_CREATED">Announcement Created</option>
-            <option value="ANNOUNCEMENT_UPDATED">Announcement Updated</option>
-            <option value="ANNOUNCEMENT_DELETED">Announcement Deleted</option>
-            <option value="PROJECT_CREATED">Project Created</option>
-            <option value="PROJECT_UPDATED">Project Updated</option>
-          </select>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="mono text-[10px] uppercase tracking-[0.22em]" style={{ color: 'var(--text-2)' }}>Audit Trail</p>
+          <h1 className="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl" style={{ color: 'var(--text-0)' }}>Audit Logs</h1>
+          <p className="mt-1 text-sm" style={{ color: 'var(--text-1)' }}>Track all administrative actions across the platform.</p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 text-muted font-medium">Action</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Actor</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Target</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Description</th>
-                <th className="text-left py-3 px-4 text-muted font-medium">Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map((log) => (
-                <tr key={log.id} className="border-b border-border hover:bg-offwhite/[0.03]">
-                  <td className="py-3 px-4">
-                    <span className="badge badge-teal">{log.action}</span>
-                  </td>
-                  <td className="py-3 px-4 text-muted">{log.actorEmail || '-'}</td>
-                  <td className="py-3 px-4 text-muted">{log.target || '-'}</td>
-                  <td className="py-3 px-4 text-muted">{log.description || '-'}</td>
-                  <td className="py-3 px-4 text-muted">{new Date(log.createdAt).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-2)' }}>
+          <Database size={14} />
+          {logs.length} entries · Page {page}/{totalPages}
         </div>
-        <div className="flex items-center justify-between mt-6">
-          <p className="text-sm text-muted">Page {page} of {totalPages}</p>
-          <div className="flex gap-2">
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="btn-secondary text-sm px-3 py-1.5 disabled:opacity-50">
-              Previous
-            </button>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="btn-secondary text-sm px-3 py-1.5 disabled:opacity-50">
-              Next
-            </button>
-          </div>
+      </div>
+
+      <div className="rounded-2xl border p-5" style={{ borderColor: 'var(--stroke)', background: 'linear-gradient(to bottom, var(--card-hi), var(--card-lo))' }}>
+        <div className="space-y-2">
+          {logs.length === 0 ? (
+            <div className="py-12 text-center text-xs" style={{ color: 'var(--text-2)' }}>No audit logs found.</div>
+          ) : (
+            logs.map((log) => (
+              <div key={log.id} className="flex items-center gap-4 rounded-lg border p-3 transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--stroke)' }}>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg" style={{ background: 'var(--cyan-soft)', color: 'var(--cyan)' }}>
+                  <Activity size={14} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium" style={{ color: 'var(--text-0)' }}>{log.action}</span>
+                    <span className={cn('rounded-full px-2 py-0.5 text-[9px] font-semibold', resultColors[log.result] || 'bg-gray-500/10 text-gray-400')}>{log.result}</span>
+                  </div>
+                  <p className="text-[11px]" style={{ color: 'var(--text-2)' }}>
+                    {log.description || `${log.actorEmail || 'System'} → ${log.target || 'N/A'}`}
+                  </p>
+                </div>
+                <div className="text-right text-[11px]" style={{ color: 'var(--text-2)' }}>
+                  <p>{log.actorEmail || 'System'}</p>
+                  <p>{timeAgo(log.createdAt)}</p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
