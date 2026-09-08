@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
-import toast from 'react-hot-toast'
 import {
   RefreshCw, Plus, Search, Filter,
   Loader2, ChevronDown, Target,
@@ -13,6 +13,7 @@ import ErrorState from '@/components/ui/ErrorState'
 import EmptyState from '@/components/ui/EmptyState'
 
 export default function AdminProjectsPage() {
+  const router = useRouter()
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -64,7 +65,7 @@ export default function AdminProjectsPage() {
           <h1 className="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl" style={{ color: 'var(--text-0)' }}>Projects & Tasks</h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--text-1)' }}>Manage all projects and their tasks.</p>
         </div>
-        <button onClick={() => toast('Create project coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+        <button onClick={() => router.push('/admin/projects/new')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
           <Plus size={14} /> New Project
         </button>
       </div>
