@@ -201,13 +201,13 @@ export default function AdminSidebar() {
 
         <div className="border-t border-[var(--stroke)] p-3">
           <Link href="/admin/profile" className="flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors hover:bg-[var(--glass-soft)]">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ background: 'var(--cyan-soft)', color: 'var(--cyan)' }}>
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold" style={{ background: 'var(--cyan-soft)', color: 'var(--cyan)' }} suppressHydrationWarning>
               {user?.fullName?.charAt(0)?.toUpperCase() || 'A'}
             </div>
             {!collapsed && (
               <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-medium" style={{ color: 'var(--text-0)' }}>{user?.fullName || 'Admin'}</p>
-                <p className="truncate text-[10px]" style={{ color: 'var(--text-2)' }}>{user?.email || 'admin@ideon.com'}</p>
+                <p className="truncate text-xs font-medium" style={{ color: 'var(--text-0)' }} suppressHydrationWarning>{user?.fullName || 'Admin'}</p>
+                <p className="truncate text-[10px]" style={{ color: 'var(--text-2)' }} suppressHydrationWarning>{user?.email || 'admin@ideon.com'}</p>
               </div>
             )}
           </Link>

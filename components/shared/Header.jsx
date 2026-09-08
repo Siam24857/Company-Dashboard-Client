@@ -13,7 +13,12 @@ export default function Header({ isAdmin = false }) {
   const { user, logout } = useAuthStore()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [todayLabel, setTodayLabel] = useState('')
   const menuRef = useRef(null)
+
+  useEffect(() => {
+    setTodayLabel(new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }))
+  }, [])
 
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -90,7 +95,7 @@ export default function Header({ isAdmin = false }) {
       <div className="min-w-0">
         <p className="truncate font-display text-base font-semibold text-[var(--text-0)]">{getPageTitle()}</p>
         <p className="mono hidden text-[10px] uppercase tracking-[0.22em] text-[var(--text-2)] sm:block">
-          {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+          {todayLabel}
         </p>
       </div>
       <div className="flex items-center gap-3">
