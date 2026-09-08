@@ -5,7 +5,7 @@ import {
   RefreshCw, Wifi, WifiOff, Server, Database,
   Cpu, HardDrive, Activity, Clock, Shield,
   AlertCircle, CheckCircle2, Loader2,
-  Terminal, Gauge, Layers,
+  Terminal, Gauge, Layers, Bell, History, Users, FolderOpen, Target,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import ErrorState from '@/components/ui/ErrorState'

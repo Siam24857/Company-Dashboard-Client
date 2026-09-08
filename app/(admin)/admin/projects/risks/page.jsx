@@ -6,7 +6,7 @@ import {
   RefreshCw, Plus, AlertTriangle, Shield, Search,
   Filter, Loader2, ArrowRight, Calendar, Target,
   ChevronDown, Wrench, XCircle, CheckCircle2,
-  GitBranch, Lock,
+  GitBranch, Lock, Clock,
 } from 'lucide-react'
 import { cn, timeAgo } from '@/lib/utils'
 import useDashboardStore from '@/store/dashboard.store'

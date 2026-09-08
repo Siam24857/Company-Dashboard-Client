@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '@/lib/api'
+import toast from 'react-hot-toast'
 import {
   RefreshCw, Plus, CalendarCheck, Search, Filter,
   Loader2, ChevronDown, Target, Clock,
@@ -99,7 +100,7 @@ export default function AdminMilestonesPage() {
                     <span className={cn('rounded-full px-2 py-0.5 text-[9px] font-semibold', statusColors[m.status] || '')}>{m.status?.replace(/_/g, ' ')}</span>
                   </div>
                   <p className="text-[11px]" style={{ color: 'var(--text-2)' }}>
-                    {m.project?.name || 'Unknown project'} · Due: {m.dueDate ? new Date(m.dueDate).toLocaleDateString() : 'No date'}
+                    {m.project?.title || 'Unknown project'} · Due: {m.dueDate ? new Date(m.dueDate).toLocaleDateString() : 'No date'}
                   </p>
                 </div>
                 <div className="text-right text-[11px]" style={{ color: 'var(--text-2)' }}>
