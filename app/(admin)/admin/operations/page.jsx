@@ -12,7 +12,7 @@ import {
   Loader2, Target, Wrench, GitBranch, Key,
   Webhook, ShieldCheck, AlertCircle, Check,
   FileText, Calendar, MessageSquare, Bell,
-  Headphones, Lock, History, Gauge, Layers,
+  Headphones, Headset, Lock, History, Gauge, Layers,
   ChevronRight, Sparkles, Brain,
 } from 'lucide-react'
 import { cn, timeAgo } from '@/lib/utils'
