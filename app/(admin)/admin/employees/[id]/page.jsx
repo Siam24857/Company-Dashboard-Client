@@ -60,7 +60,7 @@ export default function AdminEmployeeDetailPage() {
           <span className="text-xs" style={{ color: 'var(--text-2)' }}>/</span>
           <h1 className="font-display text-2xl font-bold tracking-tight" style={{ color: 'var(--text-0)' }}>{employee.fullName}</h1>
         </div>
-        <button onClick={() => toast.info('Edit employee coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--stroke)', color: 'var(--text-1)' }}>
+        <button onClick={() => toast('Edit employee coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--stroke)', color: 'var(--text-1)' }}>
           <Plus size={14} /> Edit
         </button>
       </div>

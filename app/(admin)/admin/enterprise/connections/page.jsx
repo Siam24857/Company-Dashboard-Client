@@ -63,7 +63,7 @@ export default function AdminConnectionsPage() {
           <h1 className="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl" style={{ color: 'var(--text-0)' }}>Connections</h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--text-1)' }}>Manage third-party integrations and connections.</p>
         </div>
-        <button onClick={() => toast.info('Create connection coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+        <button onClick={() => toast('Create connection coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
           <Plus size={14} /> New Connection
         </button>
       </div>

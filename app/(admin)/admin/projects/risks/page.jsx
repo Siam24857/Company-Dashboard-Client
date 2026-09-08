@@ -70,7 +70,7 @@ export default function AdminRisksPage() {
           <h1 className="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl" style={{ color: 'var(--text-0)' }}>Project Risks</h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--text-1)' }}>Identify, track, and mitigate project risks across the organization.</p>
         </div>
-        <button onClick={() => toast.info('Create risk feature coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--red)', color: 'var(--red)' }}>
+        <button onClick={() => toast('Create risk feature coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--red)', color: 'var(--red)' }}>
           <Plus size={14} /> Add Risk
         </button>
       </div>

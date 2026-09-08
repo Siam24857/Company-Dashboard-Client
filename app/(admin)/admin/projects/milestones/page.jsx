@@ -61,7 +61,7 @@ export default function AdminMilestonesPage() {
           <h1 className="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl" style={{ color: 'var(--text-0)' }}>Milestones</h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--text-1)' }}>Track project milestones and key deliverables.</p>
         </div>
-        <button onClick={() => toast.info('Create milestone coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+        <button onClick={() => toast('Create milestone coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
           <Plus size={14} /> New Milestone
         </button>
       </div>

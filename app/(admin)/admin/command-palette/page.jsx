@@ -73,7 +73,7 @@ export default function AdminCommandPalettePage() {
                 key={i}
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-[var(--glass-soft)]"
                 style={{ color: 'var(--text-0)' }}
-                onClick={() => toast.info(`Executing: ${cmd.label}`)}
+                onClick={() => toast(`Executing: ${cmd.label}`)}
               >
                 <span className="text-lg">{cmd.icon}</span>
                 <div className="min-w-0 flex-1 text-left">

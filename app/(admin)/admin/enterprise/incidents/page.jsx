@@ -69,7 +69,7 @@ export default function AdminIncidentsPage() {
           <h1 className="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl" style={{ color: 'var(--text-0)' }}>Incidents</h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--text-1)' }}>Track and resolve production incidents.</p>
         </div>
-        <button onClick={() => toast.info('Create incident feature coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--red)', color: 'var(--red)' }}>
+        <button onClick={() => toast('Create incident feature coming soon')} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors hover:bg-[var(--glass-soft)]" style={{ borderColor: 'var(--red)', color: 'var(--red)' }}>
           <Plus size={14} /> Report Incident
         </button>
       </div>

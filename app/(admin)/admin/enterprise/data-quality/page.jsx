@@ -126,10 +126,10 @@ export default function AdminDataQualityPage() {
                   <div className="flex items-center gap-2">
                     {issue.status === 'OPEN' && (
                       <>
-                        <button onClick={() => toast.info('Resolution started')} className="rounded-lg bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20">
+                        <button onClick={() => toast('Resolution started')} className="rounded-lg bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/20">
                           <CheckCircle2 size={14} /> Fix
                         </button>
-                        <button onClick={() => toast.info('Issue dismissed')} className="rounded-lg bg-gray-500/10 px-3 py-1.5 text-xs font-medium text-gray-400 transition-colors hover:bg-gray-500/20">
+                        <button onClick={() => toast('Issue dismissed')} className="rounded-lg bg-gray-500/10 px-3 py-1.5 text-xs font-medium text-gray-400 transition-colors hover:bg-gray-500/20">
                           <XCircle size={14} /> Dismiss
                         </button>
                       </>
