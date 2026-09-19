@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
-import { Calendar, CheckOut, X } from 'lucide-react'
+import { Calendar, X } from 'lucide-react'
 
 export default function SalesAttendancePage() {
   const router = useRouter()

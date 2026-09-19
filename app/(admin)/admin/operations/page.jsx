@@ -12,7 +12,7 @@ import {
   Loader2, Target, Wrench, GitBranch, Key,
   Webhook, ShieldCheck, AlertCircle, Check,
   FileText, Calendar, MessageSquare, Bell,
-  Headphones, Headset, Lock, History, Gauge, Layers,
+  Headphones, Lock, History, Gauge, Layers,
   ChevronRight, Sparkles, Brain,
 } from 'lucide-react'
 import { cn, timeAgo } from '@/lib/utils'
@@ -146,7 +146,7 @@ export default function AdminOperationsPage() {
             {[
               { label: 'Create Project', href: '/admin/projects/new', icon: FolderOpen, color: 'var(--purple)' },
               { label: 'New Announcement', href: '/admin/announcements', icon: MessageSquare, color: 'var(--yellow)' },
-              { label: 'Open Support', href: '/admin/support', icon: Headset, color: 'var(--cyan)' },
+              { label: 'Open Support', href: '/admin/support', icon: Headphones, color: 'var(--cyan)' },
               { label: 'View Audit Logs', href: '/admin/audit-logs', icon: History, color: 'var(--blue)' },
               { label: 'System Settings', href: '/admin/settings', icon: Settings, color: 'var(--text-2)' },
               { label: 'Automation Rules', href: '/admin/enterprise/automation', icon: Zap, color: 'var(--violet)' },

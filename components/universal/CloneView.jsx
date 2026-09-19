@@ -3,7 +3,7 @@
 import useDashboardStore from '@/store/dashboard.store'
 import useFlagsStore from '@/store/flags.store'
 import { toast } from 'react-hot-toast'
-import { Clone } from 'lucide-react'
+import { Copy } from 'lucide-react'
 
 /* Feature 6 — One-Click Clone View. Opens the exact view (layout + filters) in a new tab. */
 export default function CloneView({ label = 'Clone view' }) {
@@ -21,7 +21,7 @@ export default function CloneView({ label = 'Clone view' }) {
       }}
       title="Duplicate current view + filters to a new tab"
     >
-      <Clone size={13} /> <span className="hidden sm:inline">{label}</span>
+      <Copy size={13} /> <span className="hidden sm:inline">{label}</span>
     </button>
   )
 }

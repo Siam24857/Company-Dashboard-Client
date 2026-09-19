@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import {
   ArrowRight, CheckCircle2, Target, Users, Clock, Plus, X, Loader2,
-  List, Columns3, Trash2, UserPlus,
+  List, Columns, Trash2, UserPlus,
 } from 'lucide-react'
 import ErrorState from '@/components/ui/ErrorState'
 import EmptyState from '@/components/ui/EmptyState'
@@ -198,7 +198,7 @@ export default function AdminProjectDetailPage() {
               <List size={12} /> List
             </button>
             <button onClick={() => setView('board')} className={cn('flex items-center gap-1 px-3 py-1.5 text-[11px] font-medium transition-colors', view === 'board' ? 'text-[var(--cyan)]' : 'hover:bg-[var(--glass-soft)]')} style={{ color: view === 'board' ? 'var(--cyan)' : 'var(--text-2)' }}>
-              <Columns3 size={12} /> Board
+              <Columns size={12} /> Board
             </button>
           </div>
         </div>
