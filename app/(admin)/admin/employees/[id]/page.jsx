@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import { useParams } from 'next/navigation'
 import { api } from '@/lib/api'
 import toast from 'react-hot-toast'
 import {
@@ -14,16 +15,18 @@ import ErrorState from '@/components/ui/ErrorState'
 import EmptyState from '@/components/ui/EmptyState'
 
 export default function AdminEmployeeDetailPage() {
+  const params = useParams()
+  const empId = params?.id || ''
   const [employee, setEmployee] = useState(null)
+  const [workload, setWorkload] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-
-  const empId = typeof window !== 'undefined' ? window.location.pathname.split('/').pop() : ''
 
   const fetchEmployee = useCallback(async () => {
     try {
       const res = await api.get(`/employees/${empId}`)
-      setEmployee(res.data.employee)
+      setEmployee(res.data.user)
+      setWorkload(res.data.workload)
     } catch (err) {
       setError(true)
     } finally {
@@ -101,7 +104,7 @@ export default function AdminEmployeeDetailPage() {
           </div>
           <div className="rounded-lg border p-4" style={{ borderColor: 'var(--stroke)' }}>
             <p className="text-[11px]" style={{ color: 'var(--text-2)' }}>Workload</p>
-            <p className="text-sm font-medium" style={{ color: 'var(--text-0)' }}>{employee.workload?.capacity || 0}% capacity</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--text-0)' }}>{workload?.capacity || 0}% capacity</p>
           </div>
         </div>
       </div>
